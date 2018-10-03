@@ -31,7 +31,7 @@ public class URLResource {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
 		}
 		String redirectTo = obj.getOriginalURL();
-		if (!redirectTo.substring(0, HTTP_PREFIX.length()).equals(HTTP_PREFIX) ||
+		if (!redirectTo.substring(0, HTTP_PREFIX.length()).equals(HTTP_PREFIX) &&
 				!redirectTo.substring(0, HTTPS_PREFIX.length()).equals(HTTPS_PREFIX)) {
 			redirectTo = HTTP_PREFIX.concat(redirectTo);
 		}
