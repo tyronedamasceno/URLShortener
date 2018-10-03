@@ -1,6 +1,10 @@
 package com.example.demo;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,16 +15,28 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class URLResource {
 
+	public static final String HTTP_PREFIX = "http://";
+	public static final String HTTPS_PREFIX = "https://";
+	
 	@Autowired
 	private URLService service;
 	
 	@RequestMapping(value="/{shortURL}", method=RequestMethod.GET)
-	public ResponseEntity<?> find(@PathVariable String shortURL) {
+	public ResponseEntity<?> find(@PathVariable String shortURL) throws URISyntaxException {
+		
 		URL obj = service.findByShortURL(shortURL);
 		if (obj == null) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
 		}
-		return ResponseEntity.ok(obj);
+		String redirectTo = obj.getOriginalURL();
+		if (!redirectTo.substring(0, HTTP_PREFIX.length()).equals(HTTP_PREFIX) ||
+				!redirectTo.substring(0, HTTPS_PREFIX.length()).equals(HTTPS_PREFIX)) {
+			redirectTo = HTTP_PREFIX.concat(redirectTo);
+		}
+		URI redir = new URI(redirectTo);
+		HttpHeaders httpHeaders = new HttpHeaders();
+	    httpHeaders.setLocation(redir);
+	    return new ResponseEntity<>(httpHeaders, HttpStatus.SEE_OTHER);
 	}
 	
 }
