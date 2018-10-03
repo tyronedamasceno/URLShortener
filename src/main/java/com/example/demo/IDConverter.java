@@ -25,7 +25,12 @@ public class IDConverter {
 			int remain = inputValue % BASE;
 			output += baseCharacters.charAt(remain);
 			inputValue /= BASE;
-		}	
+		}
+		
+		while (output.length() < 5) {
+			output = "0".concat(output);
+		}
+		
 		return output;
 	}
 	
